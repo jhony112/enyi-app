@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Card from '../components/Card';
 import VoiceActionButton from '../components/VoiceActionButton';
 import useVoiceControl from '../hooks/useVoiceControl';
+import QuickActions from '../components/QuickActions';
+import LottieView from 'lottie-react-native';
 
 const DashboardScreen = () => {
-  const { isListening, startListening, stopListening } = useVoiceControl();
+  const { isListening, isSpeaking, startListening, stopListening } = useVoiceControl();
 
   return (
     <View style={styles.container}>
@@ -15,18 +17,17 @@ const DashboardScreen = () => {
           <Text>Hello! I am your AI assistant. How can I help you today?</Text>
         </Card>
         <Card title="Quick Actions">
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.quickActionButton}>
-              <Text style={styles.quickActionButtonText}>📊</Text>
-              <Text style={styles.quickActionButtonText}>Analytics</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.quickActionButton}>
-              <Text style={styles.quickActionButtonText}>📰</Text>
-              <Text style={styles.quickActionButtonText}>News</Text>
-            </TouchableOpacity>
-          </View>
+          <QuickActions />
         </Card>
       </ScrollView>
+      {isSpeaking && (
+        <LottieView
+          source={require('../assets/animations/talking.json')}
+          autoPlay
+          loop
+          style={styles.talkingOrb}
+        />
+      )}
       <View style={styles.voiceButtonContainer}>
         <VoiceActionButton
           onPress={isListening ? stopListening : startListening}
@@ -47,24 +48,17 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     margin: 20,
   },
-  quickActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  quickActionButton: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  quickActionButtonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
   voiceButtonContainer: {
     position: 'absolute',
     bottom: 30,
     alignSelf: 'center',
+  },
+  talkingOrb: {
+    position: 'absolute',
+    bottom: 150,
+    alignSelf: 'center',
+    width: 100,
+    height: 100,
   },
 });
 

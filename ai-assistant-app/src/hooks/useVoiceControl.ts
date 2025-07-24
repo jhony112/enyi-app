@@ -5,6 +5,7 @@ import { Audio } from 'expo-av';
 
 const useVoiceControl = () => {
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [recognizedText, setRecognizedText] = useState('');
   const navigation = useNavigation();
 
@@ -38,10 +39,16 @@ const useVoiceControl = () => {
   };
 
   const speak = async (text) => {
+    setIsSpeaking(true);
     const { sound } = await Audio.Sound.createAsync(
       { uri: `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=en&client=tw-ob` },
       { shouldPlay: true }
     );
+    sound.setOnPlaybackStatusUpdate((status) => {
+      if (status.didJustFinish) {
+        setIsSpeaking(false);
+      }
+    });
   };
 
   const handleCommand = (command) => {
@@ -58,6 +65,7 @@ const useVoiceControl = () => {
 
   return {
     isListening,
+    isSpeaking,
     recognizedText,
     startListening,
     stopListening,
