@@ -1,20 +1,37 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import Card from '../components/Card';
 import VoiceActionButton from '../components/VoiceActionButton';
 import useVoiceControl from '../hooks/useVoiceControl';
 import QuickActions from '../components/QuickActions';
 import LottieView from 'lottie-react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DashboardScreen = () => {
-  const { isListening, isSpeaking, startListening, stopListening } = useVoiceControl();
+  const [userName, setUserName] = useState('');
+  const { isListening, isSpeaking, startListening, stopListening, speak } = useVoiceControl();
+
+  useEffect(() => {
+    const getUserName = async () => {
+      try {
+        const name = await AsyncStorage.getItem('userName');
+        if (name !== null) {
+          setUserName(name);
+          speak(`Hello, ${name}! How can I help you today?`);
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    getUserName();
+  }, []);
 
   return (
     <View style={styles.container}>
       <ScrollView>
         <Text style={styles.title}>AI Assistant</Text>
-        <Card title="Welcome">
-          <Text>Hello! I am your AI assistant. How can I help you today?</Text>
+        <Card title={`Welcome, ${userName}!`}>
+          <Text>How can I help you today?</Text>
         </Card>
         <Card title="Quick Actions">
           <QuickActions />
